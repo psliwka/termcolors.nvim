@@ -29,8 +29,29 @@ local function shade_color(color, percent)
   return string.format("#%02x%02x%02x", r, g, b)
 end
 
+local function ordered_table(t)
+  local current_index = 1
+  local metatable = {}
+  function metatable:__newindex(key,value)
+    rawset(self, key, value)
+    rawset(self, current_index, key)
+    current_index = current_index + 1
+  end
+  return setmetatable(t or {}, metatable)
+end
+
+local function ordered_pairs(t)
+  local current_index = 0
+  local function iter(t)
+    current_index = current_index + 1
+    local key = t[current_index]
+    if key then return key, t[key] end
+  end
+  return iter, t
+end
+
 function termcolors.scrape_current_colorscheme()
-	local colors = {}
+	local colors = ordered_table{}
 	colors.foreground = color_from_syntax("Normal", "fg")
 	colors.background = color_from_syntax("Normal", "bg")
 	for i=0,15 do
@@ -50,7 +71,7 @@ function termcolors.scrape_current_colorscheme()
 end
 
 function termcolors.generate_kitty_config()
-	for setting_name, setting_value in pairs(termcolors.scrape_current_colorscheme()) do
+	for setting_name, setting_value in ordered_pairs(termcolors.scrape_current_colorscheme()) do
 		print(setting_name .. " " .. setting_value)
 	end
 end
