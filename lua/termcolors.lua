@@ -71,9 +71,21 @@ function termcolors.scrape_current_colorscheme()
 end
 
 function termcolors.generate_kitty_config()
+  local config = {}
 	for setting_name, setting_value in ordered_pairs(termcolors.scrape_current_colorscheme()) do
-		print(setting_name .. " " .. setting_value)
+		table.insert(config, setting_name .. " " .. setting_value)
 	end
+  return config
+end
+
+function termcolors.show()
+  local buf = vim.api.nvim_create_buf(true, true)
+  vim.api.nvim_buf_set_name(buf, 'Termcolors')
+  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+  vim.api.nvim_buf_set_lines(buf, 0, 1, true, termcolors.generate_kitty_config())
+  vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+  vim.api.nvim_buf_set_option(buf, 'readonly', true)
+  vim.cmd('b ' .. buf)
 end
 
 return termcolors
