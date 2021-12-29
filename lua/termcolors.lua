@@ -71,6 +71,9 @@ function termcolors.scrape_current_colorscheme()
 	colors.active_tab_background = colors.background
 	colors.inactive_tab_foreground = color_from_syntax("Comment", "fg")
 	colors.inactive_tab_background = shade_color(colors.background, is_light() and -12 or -25)
+  colors.active_border_color = color_from_syntax("TabLineSel")
+  colors.inactive_border_color = color_from_syntax("VertSplit")
+  colors.bell_border_color = color_from_syntax("TextWarning")
 	return colors
 end
 
