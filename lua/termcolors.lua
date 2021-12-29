@@ -50,6 +50,10 @@ local function ordered_pairs(t)
   return iter, t
 end
 
+local function is_light()
+  return vim.opt.background:get() == "light"
+end
+
 function termcolors.scrape_current_colorscheme()
 	local colors = ordered_table{}
 	colors.foreground = color_from_syntax("Normal", "fg")
@@ -62,11 +66,11 @@ function termcolors.scrape_current_colorscheme()
 	colors.url_color = color_from_syntax("url")
 	colors.selection_foreground = color_from_syntax("Visual", "fg") or "none"
 	colors.selection_background = color_from_syntax("Visual", "bg")
-	colors.tab_bar_background = shade_color(colors.background, -45)  -- TODO: tweak for light themes
+	colors.tab_bar_background = shade_color(colors.background, is_light() and -20 or -45)
 	colors.active_tab_foreground = colors.foreground
 	colors.active_tab_background = colors.background
 	colors.inactive_tab_foreground = color_from_syntax("Comment", "fg")
-	colors.inactive_tab_background = shade_color(colors.background, -25)  -- TODO: tweak for light themes
+	colors.inactive_tab_background = shade_color(colors.background, is_light() and -12 or -25)
 	return colors
 end
 
@@ -81,11 +85,11 @@ end
 function termcolors.show()
   local buf = vim.api.nvim_create_buf(true, true)
   vim.api.nvim_buf_set_name(buf, 'Termcolors')
-  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
   vim.api.nvim_buf_set_lines(buf, 0, 1, true, termcolors.generate_kitty_config())
   vim.api.nvim_buf_set_option(buf, 'modifiable', false)
   vim.api.nvim_buf_set_option(buf, 'readonly', true)
-  vim.cmd('b ' .. buf)
+  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+  vim.cmd('buffer ' .. buf)
 end
 
 return termcolors
