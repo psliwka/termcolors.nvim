@@ -75,9 +75,9 @@ function termcolors.scrape_current_colorscheme()
 end
 
 function termcolors.generate_kitty_config()
-  local config = {}
+  local config = {"# Put the following lines in your ~/.config/kitty/kitty.conf"}
 	for setting_name, setting_value in ordered_pairs(termcolors.scrape_current_colorscheme()) do
-		table.insert(config, setting_name .. " " .. setting_value)
+		table.insert(config, setting_name .. " " .. string.lower(setting_value))
 	end
   return config
 end
@@ -89,6 +89,7 @@ function termcolors.show()
   vim.api.nvim_buf_set_option(buf, 'modifiable', false)
   vim.api.nvim_buf_set_option(buf, 'readonly', true)
   vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+  vim.api.nvim_buf_set_option(buf, 'filetype', 'conf')
   vim.cmd('buffer ' .. buf)
 end
 
