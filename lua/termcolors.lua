@@ -60,7 +60,7 @@ function termcolors.scrape_current_colorscheme()
 	local colors = ordered_table({})
 	colors.foreground = color_from_syntax("Normal", "fg")
 	colors.background = color_from_syntax("Normal", "bg")
-	for i = 0, 15 do
+	for i = 0, 255 do
 		colors["color" .. i] = vim.g["terminal_color_" .. i]
 	end
 	colors.cursor = color_from_syntax("cursor", "bg") or colors.foreground
