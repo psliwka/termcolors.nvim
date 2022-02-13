@@ -76,13 +76,20 @@ function termcolors.scrape_current_colorscheme()
 	colors.active_border_color = color_from_syntax("TabLineSel")
 	colors.inactive_border_color = color_from_syntax("VertSplit")
 	colors.bell_border_color = color_from_syntax("TextWarning")
-	return colors
+
+	local cleaned_colors = ordered_table({})
+	for setting_name, setting_value in ordered_pairs(colors) do
+		if setting_value ~= nil then
+			cleaned_colors[setting_name] = string.lower(setting_value)
+		end
+	end
+	return cleaned_colors
 end
 
 function termcolors.generate_kitty_config()
 	local config = { "# Put the following lines in your ~/.config/kitty/kitty.conf" }
 	for setting_name, setting_value in ordered_pairs(termcolors.scrape_current_colorscheme()) do
-		table.insert(config, setting_name .. " " .. string.lower(setting_value))
+		table.insert(config, setting_name .. " " .. setting_value)
 	end
 	return config
 end
