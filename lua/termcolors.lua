@@ -1,5 +1,15 @@
 local termcolors = {}
 
+local helpers = require'termcolors/helpers'
+
+-- Provided plugins
+termcolors.plugins = {
+    ["kitty"] = require'termcolors/plugins/kitty',
+}
+
+-- The default plugin to use
+termcolors.default_plugin = "kitty"
+
 local function color_from_syntax(name, type)
 	type = type or "fg"
 	local result = vim.api.nvim_eval('synIDattr(synIDtrans(hlID("' .. name .. '")), "' .. type .. '#")')
@@ -29,35 +39,26 @@ local function shade_color(color, percent)
 	return string.format("#%02x%02x%02x", r, g, b)
 end
 
-local function ordered_table(t)
-	local current_index = 1
-	local metatable = {}
-	function metatable:__newindex(key, value)
-		rawset(self, key, value)
-		rawset(self, current_index, key)
-		current_index = current_index + 1
-	end
-	return setmetatable(t or {}, metatable)
-end
-
-local function ordered_pairs(t)
-	local current_index = 0
-	local function iter(t)
-		current_index = current_index + 1
-		local key = t[current_index]
-		if key then
-			return key, t[key]
-		end
-	end
-	return iter, t
-end
-
 local function is_light()
 	return vim.opt.background:get() == "light"
 end
 
+function termcolors.setup(config)
+    -- merge the additionally specified plugins
+    --
+    -- This should allow people to create plugins sperate from the termcolors
+    -- and hook them in
+    if config.plugins ~= nil and type(config.plugins) == "table" then
+        for k,v in config.plugins do
+            termcolors.plugins[k] = v
+        end
+    end
+
+    termcolors.default_plugin = config.default_plugin or termcolors.default_plugin
+end
+
 function termcolors.scrape_current_colorscheme()
-	local colors = ordered_table({})
+	local colors = helpers.ordered_table({})
 	colors.foreground = color_from_syntax("Normal", "fg")
 	colors.background = color_from_syntax("Normal", "bg")
 	for i = 0, 255 do
@@ -77,8 +78,8 @@ function termcolors.scrape_current_colorscheme()
 	colors.inactive_border_color = color_from_syntax("VertSplit")
 	colors.bell_border_color = color_from_syntax("TextWarning")
 
-	local cleaned_colors = ordered_table({})
-	for setting_name, setting_value in ordered_pairs(colors) do
+	local cleaned_colors = helpers.ordered_table({})
+	for setting_name, setting_value in helpers.ordered_pairs(colors) do
 		if setting_value ~= nil then
 			cleaned_colors[setting_name] = string.lower(setting_value)
 		end
@@ -86,18 +87,23 @@ function termcolors.scrape_current_colorscheme()
 	return cleaned_colors
 end
 
-function termcolors.generate_kitty_config()
-	local config = { "# Put the following lines in your ~/.config/kitty/kitty.conf" }
-	for setting_name, setting_value in ordered_pairs(termcolors.scrape_current_colorscheme()) do
-		table.insert(config, setting_name .. " " .. setting_value)
-	end
-	return config
-end
+function termcolors.show(plugin_name)
+    if plugin_name == nil or plugin_name == "" then
+        plugin_name = termcolors.default_plugin
+    end
 
-function termcolors.show()
+    local plugin = termcolors.plugins[plugin_name]
+    if plugin == nil then
+        error("Plugin is nil")
+    end
+
+    -- Get the current color scheme
+    local colorscheme = termcolors.scrape_current_colorscheme()
+
+    -- Generate output buffer
 	local buf = vim.api.nvim_create_buf(true, true)
 	vim.api.nvim_buf_set_name(buf, "Termcolors")
-	vim.api.nvim_buf_set_lines(buf, 0, 1, true, termcolors.generate_kitty_config())
+	vim.api.nvim_buf_set_lines(buf, 0, 1, true, plugin.generate(colorscheme))
 	vim.api.nvim_buf_set_option(buf, "modifiable", false)
 	vim.api.nvim_buf_set_option(buf, "readonly", true)
 	vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
