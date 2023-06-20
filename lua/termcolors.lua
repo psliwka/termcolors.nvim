@@ -4,8 +4,8 @@ local helpers = require'termcolors/helpers'
 
 -- Provided plugins
 termcolors.plugins = {
-    ["kitty"] = require'termcolors/plugins/kitty',
-    ["alacritty"] = require'termcolors/plugins/alacritty'
+	["kitty"] = require'termcolors/plugins/kitty',
+	["alacritty"] = require'termcolors/plugins/alacritty'
 }
 
 -- The default plugin to use
@@ -45,17 +45,17 @@ local function is_light()
 end
 
 function termcolors.setup(config)
-    -- merge the additionally specified plugins
-    --
-    -- This should allow people to create plugins sperate from the termcolors
-    -- and hook them in
-    if config.plugins ~= nil and type(config.plugins) == "table" then
-        for k,v in config.plugins do
-            termcolors.plugins[k] = v
-        end
-    end
+	-- merge the additionally specified plugins
+	--
+	-- This should allow people to create plugins sperate from the termcolors
+	-- and hook them in
+	if config.plugins ~= nil and type(config.plugins) == "table" then
+		for k,v in config.plugins do
+			termcolors.plugins[k] = v
+		end
+	end
 
-    termcolors.default_plugin = config.default_plugin or termcolors.default_plugin
+	termcolors.default_plugin = config.default_plugin or termcolors.default_plugin
 end
 
 function termcolors.scrape_current_colorscheme()
@@ -89,19 +89,19 @@ function termcolors.scrape_current_colorscheme()
 end
 
 function termcolors.show(plugin_name)
-    if plugin_name == nil or plugin_name == "" then
-        plugin_name = termcolors.default_plugin
-    end
+	if plugin_name == nil or plugin_name == "" then
+		plugin_name = termcolors.default_plugin
+	end
 
-    local plugin = termcolors.plugins[plugin_name]
-    if plugin == nil then
-        error("Plugin is nil")
-    end
+	local plugin = termcolors.plugins[plugin_name]
+	if plugin == nil then
+		error("Plugin is nil")
+	end
 
-    -- Get the current color scheme
-    local colorscheme = termcolors.scrape_current_colorscheme()
+	-- Get the current color scheme
+	local colorscheme = termcolors.scrape_current_colorscheme()
 
-    -- Generate output buffer
+	-- Generate output buffer
 	local buf = vim.api.nvim_create_buf(true, true)
 	vim.api.nvim_buf_set_name(buf, "Termcolors")
 	vim.api.nvim_buf_set_lines(buf, 0, 1, true, plugin.generate(colorscheme))
