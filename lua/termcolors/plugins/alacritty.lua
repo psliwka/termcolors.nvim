@@ -1,44 +1,80 @@
 local module = {}
 
+local color_map = {
+    colors = {
+        primary = {
+            background =  "background",
+            forground = "foreground",
+        },
+        cursor = {
+            text = "cursor_text_color",
+            cursor = "cursor"
+        },
+        selection = {
+            text = "selection_foreground",
+            background = "selection_background",
+        },
+        normal = {
+            black = "color0",
+            red = "color1",
+            green = "color2",
+            yellow = "color3",
+            blue = "color4",
+            mageneta = "color5",
+            cyan = "color6",
+            white = "color7"
+        },
+        bright = {
+            black = "color8",
+            red = "color9",
+            green = "color10",
+            yellow = "color11",
+            blue = "color12",
+            mageneta = "color13",
+            cyan = "color14",
+            white = "color15"
+        }
+    }
+};
+
 local function quote_str(str)
 	return "'" .. str .. "'"
 end
 
+local function create_line(indent, key, value)
+	local line = string.rep("  ", indent) .. key .. ":"
+
+	if value ~= nil then
+		line = line .. " " .. quote_str(value)
+	end
+
+	return line
+end
+
+local function write_entries(output, colorscheme, map, indent)
+	for key, value in pairs(map) do
+		if type(value) == "string" then
+			-- so our value is a key for the colorscheme, check it exists in 
+			-- the colorscheme, if not, ignore it, otherwise write out a line
+			if colorscheme[value] ~= nil then
+				table.insert(output, create_line(indent, key, colorscheme[value]))
+			end
+		elseif type(value) == "table" then
+			-- If it's a table we assume it's a submap
+			table.insert(output, create_line(indent, key))
+			write_entries(output, colorscheme, value, indent + 1)
+		else
+			error("Invalid color map")
+		end
+	end
+end
+
 module.generate = function(colorscheme)
-	local config = { "# Put the following lines in your ~/.config/alacritty/alacritty.yml" }
+	local output = { "# Put the following lines in your ~/.config/alacritty/alacritty.yml" }
 
-	table.insert(config, "colors:")
-	table.insert(config, "	primary:")
-	table.insert(config, "	  background: " .. quote_str(colorscheme.background))
-	table.insert(config, "	  foreground: " .. quote_str(colorscheme.foreground))
-	table.insert(config, "	cursor:")
-	table.insert(config, "	  text: " .. quote_str(colorscheme.cursor_text_color))
-	table.insert(config, "	  cursor: " .. quote_str(colorscheme.cursor))
-	table.insert(config, "	selection:")
-	table.insert(config, "	  text: " .. quote_str(colorscheme.selection_foreground))
-	table.insert(config, "	  background: " .. quote_str(colorscheme.selection_background))
+	write_entries(output, colorscheme, color_map, 0)
 
-	table.insert(config, "	normal:")
-	table.insert(config, "	  black: " .. quote_str(colorscheme["color0"]))
-	table.insert(config, "	  red: " .. quote_str(colorscheme["color1"]))
-	table.insert(config, "	  green: " .. quote_str(colorscheme["color2"]))
-	table.insert(config, "	  yellow: " .. quote_str(colorscheme["color3"]))
-	table.insert(config, "	  blue: " .. quote_str(colorscheme["color4"]))
-	table.insert(config, "	  mageneta: " .. quote_str(colorscheme["color5"]))
-	table.insert(config, "	  cyan: " .. quote_str(colorscheme["color6"]))
-	table.insert(config, "	  white: " .. quote_str(colorscheme["color7"]))
-
-	table.insert(config, "	bright:")
-	table.insert(config, "	  black: " .. quote_str(colorscheme["color8"]))
-	table.insert(config, "	  red: " .. quote_str(colorscheme["color9"]))
-	table.insert(config, "	  green: " .. quote_str(colorscheme["color10"]))
-	table.insert(config, "	  yellow: " .. quote_str(colorscheme["color11"]))
-	table.insert(config, "	  blue: " .. quote_str(colorscheme["color12"]))
-	table.insert(config, "	  mageneta: " .. quote_str(colorscheme["color13"]))
-	table.insert(config, "	  cyan: " .. quote_str(colorscheme["color14"]))
-	table.insert(config, "	  white: " .. quote_str(colorscheme["color15"]))
-
-	return config
+	return output
 end
 
 return module
