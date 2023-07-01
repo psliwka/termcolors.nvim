@@ -1,1 +1,1 @@
-command! TermcolorsShow lua require'termcolors'.show()
+command! -nargs=? TermcolorsShow lua require'termcolors'.show("<args>")

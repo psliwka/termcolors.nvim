@@ -31,12 +31,46 @@ Plug 'psliwka/termcolors.nvim'
 4. Restart your terminal, or tell it to reload its config file (e.g.
    `ctrl+cmd+.` for kitty)
 
+## Advanced Configuration
+
+In order to configure Termcolors for your specific usage you can call
+
+```
+require'termcolors'.setup {
+    -- If you write your own plugin, you can declare it here so Termcolors
+    -- is aware of it
+    --
+    -- Otherwise you don't need to specify this option at all
+    plugins = {
+        ["my_custom_plugin_name"] = require'path_to_your_plugin_module'
+    },
+    -- The name of the default plugin you wish to use.
+    -- If not specified, it'll be set to `kitty`
+    default_plugin = "my_custom_plugin_name"
+}
+```
+
+## Plugins
+
+Termcolors ships with two plugins:
+
+* kitty
+* alacritty
+
+To call the generator for a sepecific plugin you can run 
+`:TermcolorsShow <plugin_name>` and it'll generate output for the terminal that
+plugin is for.
+
+Calling `:TermcolorsShow` without an argument will instead use the configured
+default plugin to generate output
+
 ## Development status
 
 Right now, this project is in its infancy. It supports the following terminal
 emulators:
 
 - [kitty](https://github.com/kovidgoyal/kitty)
+- [alacritty](https://github.com/alacritty/alacritty)
 
 Additionally, its heuristics for detecting proper colors for various terminal
 elements may not work for all colorschemes. So far, it has been tested and
