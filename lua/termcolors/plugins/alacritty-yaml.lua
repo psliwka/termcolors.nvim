@@ -20,7 +20,7 @@ local color_map = {
 			green = "color2",
 			yellow = "color3",
 			blue = "color4",
-			magenta = "color5",
+			mageneta = "color5",
 			cyan = "color6",
 			white = "color7"
 		},
@@ -30,7 +30,7 @@ local color_map = {
 			green = "color10",
 			yellow = "color11",
 			blue = "color12",
-			magenta = "color13",
+			mageneta = "color13",
 			cyan = "color14",
 			white = "color15"
 		}
@@ -38,40 +38,31 @@ local color_map = {
 };
 
 local function quote_str(str)
-	return "\"" .. str .. "\""
+	return "'" .. str .. "'"
 end
 
-local function write_group_header(output, path)
-	if #path == 0 then return end
-	table.insert(output, "[" .. table.concat(path, ".") .. "]")
+local function create_line(indent, key, value)
+	local line = string.rep("  ", indent) .. key .. ":"
+
+	if value ~= nil then
+		line = line .. " " .. quote_str(value)
+	end
+
+	return line
 end
 
-local function write_key_value_pair(output, key, value)
-	if value == nil then return end
-	table.insert(output, key .. " = " .. quote_str(value))
-end
-
-local function write_entries(output, colorscheme, map, path)
-	path = path or {}
-
-	local group_header_written = false
-
+local function write_entries(output, colorscheme, map, indent)
 	for key, value in pairs(map) do
 		if type(value) == "string" then
+			-- so our value is a key for the colorscheme, check it exists in 
+			-- the colorscheme, if not, ignore it, otherwise write out a line
 			if colorscheme[value] ~= nil then
-				-- Write the group header if it hasn't been written already
-				if not group_header_written and #path > 0 then
-					table.insert(output, "")
-					write_group_header(output, path)
-					group_header_written = true
-				end
-				-- Write the colorscheme entry
-				write_key_value_pair(output, key, value)
+				table.insert(output, create_line(indent, key, colorscheme[value]))
 			end
 		elseif type(value) == "table" then
-			table.insert(path, key)
-			write_entries(output, colorscheme, value, path)
-			table.remove(path)
+			-- If it's a table we assume it's a submap
+			table.insert(output, create_line(indent, key))
+			write_entries(output, colorscheme, value, indent + 1)
 		else
 			error("Invalid color map")
 		end
@@ -81,7 +72,7 @@ end
 module.generate = function(colorscheme)
 	local output = { "# Put the following lines in your ~/.config/alacritty/alacritty.yml" }
 
-	write_entries(output, colorscheme, color_map)
+	write_entries(output, colorscheme, color_map, 0)
 
 	return output
 end

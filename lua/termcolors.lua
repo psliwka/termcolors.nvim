@@ -5,7 +5,8 @@ local helpers = require'termcolors/helpers'
 -- Provided plugins
 termcolors.plugins = {
 	["kitty"] = require'termcolors/plugins/kitty',
-	["alacritty"] = require'termcolors/plugins/alacritty'
+	["alacritty"] = require'termcolors/plugins/alacritty',
+	["alacritty-yaml"] = require'termcolors/plugins/alacritty-yaml'
 }
 
 -- The default plugin to use
