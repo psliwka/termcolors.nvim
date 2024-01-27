@@ -79,7 +79,7 @@ local function write_entries(output, colorscheme, map, path)
 end
 
 module.generate = function(colorscheme)
-	local output = { "# Put the following lines in your ~/.config/alacritty/alacritty.yml" }
+	local output = { "# Put the following lines in your ~/.config/alacritty/alacritty.toml" }
 
 	write_entries(output, colorscheme, color_map)
 
