@@ -66,7 +66,7 @@ local function write_entries(output, colorscheme, map, path)
 					group_header_written = true
 				end
 				-- Write the colorscheme entry
-				write_key_value_pair(output, key, value)
+				write_key_value_pair(output, key, colorscheme[value])
 			end
 		elseif type(value) == "table" then
 			table.insert(path, key)
