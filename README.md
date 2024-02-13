@@ -21,7 +21,10 @@ Install the plugin using your favorite plugin manager, for example [vim-plug]:
 Plug 'psliwka/termcolors.nvim'
 ```
 
-## Usage
+Alternatively, you may run this plugin without installing. For details, see the
+[Using standalone](#using-standalone) section.
+
+## Using as plugin
 
 1. Configure Neovim to use colorsheme of your choice
 2. Ensure your `'background'` is set correctly (i.e. is set to `dark` or `light`
@@ -30,6 +33,17 @@ Plug 'psliwka/termcolors.nvim'
    config file
 4. Restart your terminal, or tell it to reload its config file (e.g.
    `ctrl+cmd+.` for kitty)
+
+## Using standalone
+
+As this plugin is rarely needed in your daily work (you usually use it once,
+when you switch your colorscheme and/or terminal program), it usually makes
+sense to run in directly from the repository, without cluttering your
+`init.lua`. To do so:
+
+1. Clone this repository and `cd` into it
+2. Run `make <TERMINAL NAME>`, for example `make kitty`
+3. Update your terminal configuration as described in the previous section
 
 ## Advanced Configuration
 
