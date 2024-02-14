@@ -11,3 +11,7 @@ alacritty:
 .PHONY: alacritty-yaml
 alacritty-yaml:
 	${BASE_COMMAND}
+
+.PHONY: termux
+termux:
+	${BASE_COMMAND}

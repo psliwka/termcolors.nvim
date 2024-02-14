@@ -66,10 +66,11 @@ require'termcolors'.setup {
 
 ## Plugins
 
-Termcolors ships with two plugins:
+Termcolors ships with three plugins:
 
 * kitty
 * alacritty
+* termux
 
 To call the generator for a sepecific plugin you can run 
 `:TermcolorsShow <plugin_name>` and it'll generate output for the terminal that
@@ -85,6 +86,7 @@ emulators:
 
 - [kitty](https://github.com/kovidgoyal/kitty)
 - [alacritty](https://github.com/alacritty/alacritty)
+- [termux](https://termux.dev)
 
 Additionally, its heuristics for detecting proper colors for various terminal
 elements may not work for all colorschemes. So far, it has been tested and
