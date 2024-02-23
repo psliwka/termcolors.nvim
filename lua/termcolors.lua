@@ -33,6 +33,9 @@ local function alter(attr, percent)
 end
 
 local function shade_color(color, percent)
+	if not color then
+		return "NONE"
+	end
 	local r, g, b = hex_to_rgb(color)
 	if not r or not g or not b then
 		return "NONE"
